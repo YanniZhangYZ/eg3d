@@ -59,6 +59,14 @@ class LookAtPoseSampler:
     """
     Same as GaussianCameraPoseSampler, except the
     camera is specified as looking at 'lookat_position', a 3-vector.
+    
+    If horizontal and vertical stddev (specified in radians) are zero, gives a
+    deterministic camera pose with yaw=horizontal_mean, pitch=vertical_mean.
+    The coordinate system is specified with y-up, z-forward, x-left.
+    Horizontal mean is the azimuthal angle (rotation around y axis) in radians,
+    vertical mean is the polar angle (angle from the y axis) in radians.
+    A point along the z-axis has azimuthal_angle=0, polar_angle=pi/2.
+    
 
     Example:
     For a camera pose looking at the origin with the camera at position [0, 0, 1]:
@@ -142,8 +150,26 @@ def FOV_to_intrinsics(fov_degrees, device='cpu'):
     Creates a 3x3 camera intrinsics matrix from the camera field of view, specified in degrees.
     Note the intrinsics are returned as normalized by image size, rather than in pixel units.
     Assumes principal point is at image center.
+    
+    the camera intrinsic matrix is a 3x3 matrix, where
+        f_x, f_y are the focal length in x and y direction
+        x_0, y_0 are principal point offsets
+        s is the skew factor
+        size_x, size_y are the image dimensions
+    [ f_x/size_x,   s,            x_0/size_x]
+    [ 0,            f_y/size_y,   y_0/size_y]
+    [ 0,            0,            1         ]
+    
+    As a sanity check, after normalization, your principal point should be close to 0.5, 0.5
     """
-
+    # normal distribution,standard deviation 1, centered at 18.83
+    fov_degrees = torch.randn(1, device=device) * 1.0 +  fov_degrees
+    # Principal point sampling: normal distribution, standard deviation 14, centered at 256
+    x_0 = (torch.randn(1, device=device) * 14.0 + 256) / 512.0
+    y_0 = (torch.randn(1, device=device) * 14.0 + 256) / 512.0
+    
     focal_length = float(1 / (math.tan(fov_degrees * 3.14159 / 360) * 1.414))
-    intrinsics = torch.tensor([[focal_length, 0, 0.5], [0, focal_length, 0.5], [0, 0, 1]], device=device)
+    # intrinsics = torch.tensor([[focal_length, 0, 0.5], [0, focal_length, 0.5], [0, 0, 1]], device=device)
+    intrinsics = torch.tensor([[focal_length, 0, x_0], [0, focal_length, y_0], [0, 0, 1]], device=device)
+    
     return intrinsics

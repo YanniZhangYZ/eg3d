@@ -145,7 +145,7 @@ class Live3DCameraPoseSampler:
     
     '''
     @staticmethod
-    def sample(horizontal_mean, vertical_mean, roll_mean_deg = 0, horizontal_stddev=0, vertical_stddev=0, roll_stddev_deg=2, radius_mean=2.7, radius_stddev=0.1, batch_size=1, device='cpu'):
+    def sample(horizontal_mean, vertical_mean, lookat_position = torch.tensor([0, 0, 0], device='cpu'), roll_mean_deg = 0, horizontal_stddev=0, vertical_stddev=0, roll_stddev_deg=2, radius_mean=2.7, radius_stddev=0.1, batch_size=1, device='cpu'):
         h = (torch.rand((batch_size, 1), device=device) * 2 - 1) * horizontal_stddev + horizontal_mean
         v = (torch.rand((batch_size, 1), device=device) * 2 - 1) * vertical_stddev + vertical_mean
         v = torch.clamp(v, 1e-5, math.pi - 1e-5)
@@ -161,7 +161,7 @@ class Live3DCameraPoseSampler:
         camera_origins[:, 2:3] = (radius_stddev * torch.randn((batch_size, 1), device=device) + radius_mean) * torch.sin(phi) * torch.sin(math.pi - theta)
         camera_origins[:, 1:2] = (radius_stddev * torch.randn((batch_size, 1), device=device) + radius_mean) * torch.cos(phi)
 
-        forward_vectors = math_utils.normalize_vecs(-camera_origins)
+        forward_vectors = math_utils.normalize_vecs(lookat_position -camera_origins)
 
         # Sample roll from a normal distribution with mean 0 and std deviation 2 degrees.
         roll_stddev_rad = math.radians(roll_stddev_deg)

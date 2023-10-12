@@ -201,7 +201,7 @@ def create_cam2world_matrix(forward_vector, origin):
     return cam2world
 
 
-def FOV_to_intrinsics(fov_mean = 18.83, fov_stddev = 1, principal_point_mean = 256, principal_point_stddev = 14, device='cpu'):
+def FOV_to_intrinsics_ref(fov_mean = 18.83, fov_stddev = 1, principal_point_mean = 256, principal_point_stddev = 14, device='cpu'):
     """
     Creates a 3x3 camera intrinsics matrix from the camera field of view, specified in degrees.
     Note the intrinsics are returned as normalized by image size, rather than in pixel units.
@@ -234,4 +234,16 @@ def FOV_to_intrinsics(fov_mean = 18.83, fov_stddev = 1, principal_point_mean = 2
          [0, focal_length, principal_point[1]], 
          [0, 0, 1]], device=device)
     
+    return intrinsics
+
+
+def FOV_to_intrinsics(fov_degrees = 18.83, device='cpu'):
+    """
+    Creates a 3x3 camera intrinsics matrix from the camera field of view, specified in degrees.
+    Note the intrinsics are returned as normalized by image size, rather than in pixel units.
+    Assumes principal point is at image center.
+    """
+
+    focal_length = float(1 / (math.tan(fov_degrees * 3.14159 / 360) * 1.414))
+    intrinsics = torch.tensor([[focal_length, 0, 0.5], [0, focal_length, 0.5], [0, 0, 1]], device=device)
     return intrinsics

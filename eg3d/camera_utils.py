@@ -137,11 +137,6 @@ class Live3DCameraPoseSampler:
     Camera roll sampling (in degrees, converted to radians):
         Mean: 0
         Standard Deviation: 2 degrees
-
-    Example:
-    For a batch of random camera poses looking at the origin with yaw sampled from [-pi/2, +pi/2] radians:
-
-    cam2worlds = UniformCameraPoseSampler.sample(math.pi/2, math.pi/2, horizontal_stddev=math.pi/2, radius=1, batch_size=16)
     
     '''
     @staticmethod

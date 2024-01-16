@@ -14,6 +14,13 @@ archive
 *.ply
 eval
 out
+dataset_preprocessing/ffhq/in-the-wild-images/
+dataset_preprocessing/ffhq/final_crops/
+dataset_preprocessing/ffhq/realign1500/
+dataset_preprocessing/ffhq/FFHQ_512.zip
+dataset_preprocessing/ffhq/LICENSE.txt
+dataset_preprocessing/ffhq/ffhq-dataset-v2.json
+client_secrets.json
 
 # evaluation:
 temp/

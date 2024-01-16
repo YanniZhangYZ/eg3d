@@ -106,7 +106,7 @@ def process_image(kwargs):#item_idx, item, dst_dir="realign1500", output_size=15
     shrink = int(np.floor(qsize / output_size * 0.5))
     if shrink > 1:
         rsize = (int(np.rint(float(img.size[0]) / shrink)), int(np.rint(float(img.size[1]) / shrink)))
-        img = img.resize(rsize, PIL.Image.ANTIALIAS)
+        img = img.resize(rsize, PIL.Image.LANCZOS)
         quad /= shrink
         qsize /= shrink
     # print("shrink--- %s seconds ---" % (time.time() - start_time))
@@ -147,7 +147,7 @@ def process_image(kwargs):#item_idx, item, dst_dir="realign1500", output_size=15
     start_time = time.time()
     img = img.transform((transform_size, transform_size), PIL.Image.QUAD, (quad + 0.5).flatten(), PIL.Image.BILINEAR)
     if output_size < transform_size:
-        img = img.resize((output_size, output_size), PIL.Image.ANTIALIAS)
+        img = img.resize((output_size, output_size), PIL.Image.LANCZOS)
     # print("transform--- %s seconds ---" % (time.time() - start_time))
 
     # Save aligned image.
